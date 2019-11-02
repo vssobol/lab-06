@@ -29,12 +29,20 @@ app.get('/location', (request, response) => {
   try{
     const geoData = require('./data/geo.json');
     const city = request.query.data;
+    const locationData = new Location(city, geoData);
     response.send(locationData);
   }
   catch(error){
-    // function or error message
+    errorHandler('Something went wrong', request, response);
   }
 })
+
+function Location(city, geoData){
+  this.search_query = city;
+  this.formatted_query = geoData.results[0].formatted_address;
+  this.latitude = geoData.results[0].geometry.location.lat;
+  this.longitude = geoData.results[0].geometry.location.lng;
+}
 
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
