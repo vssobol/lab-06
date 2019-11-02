@@ -37,6 +37,19 @@ app.get('/location', (request, response) => {
   }
 })
 
+app.get('/weather', (request, response) => {
+  try{
+    const geoData = require('./data/darksky.json').daily.data;
+    const city = req.query.data;
+    const locationData = new Location(city, geoData);
+    response.send(locationData);
+  }
+  catch(error){
+    errorHandler('Something went wrong', request, response);
+  }
+})
+
+
 function Location(){
   this.search_query = city;
   this.formatted_query = geoData.results[0].formatted_address;
