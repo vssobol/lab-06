@@ -2,25 +2,39 @@
 
 require('dotenv').config();
 const express = require('express');
-const app = express();
-
+const cors = require('cors');
 const PORT = process.env.PORT || 3000;
+const app = express();
+app.use(cors());
 
-app.use(express.static('./public'));
-
-app.get('/hello', (request, response) => {
-  response.status(200).send('Hello');
+app.get('/', (request, response) => {
+  response.send('Home Page!');
 });
 
-app.get('/data', (request, response) => {
-  let airplanes = {
-    departure: Date.now(),
-    canFly: true,
-    pilot: 'Well Trained'
+app.get('/bad', (request, response) => {
+  throw new Error('Not Found');
+})
+
+app.get('/about', aboutUsHandler);
+
+function aboutUsHandler(request, response){
+  response.status(200).send('This is the about page .html');
+}
+
+app.get('*', (request,response) => {
+  response.status(404).send('Route does not exist');
+})
+
+app.get('/location', (request, response) => {
+  try{
+    const geoData = require('./data/geo.json');
+    const city = request.query.data;
+    response.send(locationData);
   }
-  response.status(200).json(airplanes);
-});
+  catch(error){
+    // function or error message
+  }
+})
 
-app.use('*', (request, response) => response.send('Sorry, that route does not exist.'))
 
-app.listen(PORT,() => console.log(`Listening on port ${PORT}`));
+app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
