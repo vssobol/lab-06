@@ -7,25 +7,25 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
 
-app.get('/', (req, res) => {
+app.get('/', (request, response) => {
   response.send('Home Page!');
 });
 
-app.get('/bad', (req, res) => {
+app.get('/bad', (request, response) => {
   throw new Error('Not Found');
 })
 
 app.get('/about', aboutUsHandler);
 
-function aboutUsHandler(req, res){
+function aboutUsHandler(request, response){
   response.status(200).send('This is the about page .html');
 }
 
-app.get('*', (req, res) => {
+app.get('*', (request, response) => {
   response.status(404).send('Route does not exist');
 })
 
-app.get('/location', (req, res) => {
+app.get('/location', (request, response) => {
   try{
     const geoData = require('./data/geo.json');
     const city = req.query.data;
@@ -33,16 +33,19 @@ app.get('/location', (req, res) => {
     response.send(locationData);
   }
   catch(error){
-    errorHandler('Something went wrong', req, res);
+    errorHandler('Something went wrong', request, response);
   }
 })
 
-function Location(city, geoData){
+function Location(){
   this.search_query = city;
   this.formatted_query = geoData.results[0].formatted_address;
   this.latitude = geoData.results[0].geometry.location.lat;
   this.longitude = geoData.results[0].geometry.location.lng;
 }
 
+function errorHandler(error, request, response) {
+  response.status(500).send(error);
+}
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
