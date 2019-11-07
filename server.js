@@ -3,7 +3,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 const app = express();
 app.use(cors());
 
@@ -35,6 +35,19 @@ app.get('/location', (request, response) => {
     errorHandler('Something went wrong', request, response);
   }
 })
+
+app.get('/weather', (request, response) => {
+  try{
+    const geoData = require('./data/darksky.json').daily.data;
+    const city = req.query.data;
+    const locationData = new Location(city, geoData);
+    response.send(locationData);
+  }
+  catch(error){
+    errorHandler('Something went wrong', request, response);
+  }
+})
+
 
 function Location(){
   this.search_query = city;
